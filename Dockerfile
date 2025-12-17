@@ -10,7 +10,7 @@ RUN dart pub get
 COPY . .
 
 # 3. Biên dịch file chính trong thư mục bin
-RUN dart compile exe lib/server.dart -o bin/server
+RUN dart compile exe bin/server.dart -o bin/server
 
 # Stage 2: Runtime
 FROM debian:bookworm-slim
