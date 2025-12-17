@@ -1,24 +1,30 @@
-# Bước 1: Build ứng dụng
+# Sử dụng bản dart ổn định nhất
 FROM dart:stable AS build
 
+# Tạo thư mục làm việc
 WORKDIR /app
 
-# Copy các file cấu hình thư viện trước để tận dụng cache
-COPY pubspec.* .
+# Chỉ copy file cấu hình trước
+COPY pubspec.yaml ./
+# Nếu bạn có file lock, hãy copy nó, nếu không thì bỏ qua dòng dưới
+COPY pubspec.lock* ./
+
+# Tải các thư viện (Nếu lỗi 69, lệnh này sẽ cho biết thiếu file gì)
 RUN dart pub get
 
-# Copy toàn bộ mã nguồn và build ra file thực thi
+# Sau đó mới copy toàn bộ nguồn
 COPY . .
+
+# Đảm bảo lệnh lấy thư viện cuối cùng để đồng bộ mã nguồn
+RUN dart pub get --offline
+
+# Build ra file thực thi
 RUN dart compile exe lib/server.dart -o lib/server
 
-# Bước 2: Tạo image nhỏ gọn để chạy
-FROM subfuzion/dart:slim
+# Chạy trên môi trường runtime nhỏ gọn
+FROM debian:bookworm-slim
+COPY --from=build /runtime/ /
+COPY --from=build /app/lib/server /app/lib/server
 
-# Copy file đã build từ bước 1 sang
-COPY --from=build /lib/server /lib/server
-
-# Mở cổng 8080 (hoặc bất kỳ cổng nào bạn dùng)
 EXPOSE 8080
-
-# Chạy server
-CMD ["/lib/server"]
+CMD ["/app/lib/server"]
