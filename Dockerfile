@@ -1,7 +1,7 @@
 # Bước 1: Build ứng dụng
 FROM dart:stable AS build
 
-#WORKDIR /app
+WORKDIR /app
 
 # Copy các file cấu hình thư viện trước để tận dụng cache
 COPY pubspec.* .
