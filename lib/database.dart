@@ -3,7 +3,7 @@ import 'package:postgres/postgres.dart';
 
 // 1. Lấy chuỗi kết nối từ biến môi trường của Render
 // Nếu chạy ở máy (local) mà không có biến này, nó sẽ dùng giá trị mặc định sau dấu ??
-final dbUrl = Platform.environment['DATABASE_URL'];
+final String dbUrl = Platform.environment['DATABASE_URL'] ?? 'postgres://postgres:Post@123!@localhost:5432/postgres';
 
 // 2. Phân tách chuỗi URL
 final uri = Uri.parse(dbUrl);
