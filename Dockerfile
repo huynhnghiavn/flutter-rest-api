@@ -2,17 +2,21 @@ FROM dart:stable AS build
 
 WORKDIR /app
 
-# 1. Copy cấu hình và tải thư viện
-COPY pubspec.* ./
+# Copy file cấu hình
+COPY pubspec.yaml ./
+# Xóa bỏ lệnh copy pubspec.lock nếu nó đang gây lỗi, hoặc cứ để nếu bạn đã chạy pub get ở local
+COPY pubspec.lock* ./
+
+# Tải các thư viện (Lúc này sẽ không còn đòi Flutter SDK nữa)
 RUN dart pub get
 
-# 2. Copy toàn bộ dự án (bao gồm cả thư mục lib và bin)
+# Copy toàn bộ mã nguồn
 COPY . .
 
-# 3. Biên dịch file chính trong thư mục bin
+# Biên dịch (Sửa lại đường dẫn bin/server.dart nếu file của bạn nằm chỗ khác)
 RUN dart compile exe bin/server.dart -o bin/server
 
-# Stage 2: Runtime
+# Stage chạy ứng dụng
 FROM debian:bookworm-slim
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/server /app/bin/server
