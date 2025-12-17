@@ -9,13 +9,13 @@ RUN dart pub get
 
 # Copy toàn bộ mã nguồn và build ra file thực thi
 COPY . .
-RUN dart compile exe bin/server.dart -o bin/server
+RUN dart compile exe lib/server.dart -o lib/server
 
 # Bước 2: Tạo image nhỏ gọn để chạy
 FROM subfuzion/dart:slim
 
 # Copy file đã build từ bước 1 sang
-COPY --from=build /lib/server /app/bin/server
+COPY --from=build /lib/server /lib/server
 
 # Mở cổng 8080 (hoặc bất kỳ cổng nào bạn dùng)
 EXPOSE 8080
